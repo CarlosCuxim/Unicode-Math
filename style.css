@@ -1,0 +1,41 @@
+html {
+    font-family: sans-serif;
+}
+
+body {
+    background-color: darkblue;
+}
+
+main {
+    background-color: white;
+    min-width: 700px;
+    width: 50%;
+    margin: auto;
+    margin-top: 30px;
+    padding: 30px;
+    border-radius: 20px;
+}
+
+h1 {
+    text-align: center;
+}
+
+
+.container {
+    border: 1px solid gray;
+    height: 100px;
+    padding: 5px;
+    resize: vertical;
+    overflow: auto;
+}
+
+form {
+    margin: auto;
+}
+
+form label {
+    display: block;
+    font-weight: bold;
+    margin-top: 15px;
+    margin-bottom: 5px;
+}
