@@ -8,7 +8,7 @@ body {
 
 main {
     background-color: white;
-    min-width: 700px;
+    min-width: 600px;
     width: 50%;
     margin: auto;
     margin-top: 30px;
@@ -20,15 +20,6 @@ h1 {
     text-align: center;
 }
 
-
-.container {
-    border: 1px solid gray;
-    height: 100px;
-    padding: 5px;
-    resize: vertical;
-    overflow: auto;
-}
-
 form {
     margin: auto;
 }
@@ -38,4 +29,18 @@ form label {
     font-weight: bold;
     margin-top: 15px;
     margin-bottom: 5px;
+}
+
+.container {
+    border: 1px solid gray;
+    height: 100px;
+    padding: 5px;
+    resize: vertical;
+    overflow: auto;
+}
+
+
+#input {
+    font-family: monospace;
+    font-size: 18px;
 }
