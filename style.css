@@ -32,6 +32,8 @@ form label {
 }
 
 .container {
+    display:inline-block;
+    width: 100%;
     border: 1px solid gray;
     height: 100px;
     padding: 5px;

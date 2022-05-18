@@ -24,27 +24,23 @@ function isLetter(C) {
 
 // Obtiene el siguiente token de una cadena y el resto de la cadena
 function getNextToken(str) {
-    let NextToken = ""
-    let RestString = ""
 
-    if(str[0]=="\\"){
-        if(isLetter(str[1])){
-            let idx = 2
-            while(idx<str.length && isLetter(str[idx])){
-                idx += 1
+    let idx = 1
+    
+    if(str.length>1) {
+        if(str[idx-1]=="\\"){
+            idx++
+            if(idx<str.length && isLetter(str[idx-1]) && isLetter(str[idx])){
+                do {
+                    idx++
+                } while(idx<str.length && isLetter(str[idx]))
             }
-
-            NextToken = str.substring(0,idx)
-            RestString = str.substring(idx)
-            
-        } else {
-            NextToken = str.substring(0,2)
-            RestString = str.substring(2)
         }
-    } else {
-        NextToken = str[0]
-        RestString = str.substring(1)
     }
+
+
+    let NextToken = str.substring(0,idx)
+    let RestString = str.substring(idx)
 
     return {NextToken, RestString}
 }
@@ -57,10 +53,12 @@ function getNextToken(str) {
 // Limpia la entrada html y lo convierte a texto
 function cleanInput(str) {
 
-    str = globalReplace(str, "<div><br></div>", "\n")
-    str = globalReplace(str, "</div>", "")
-    str = globalReplace(str, "<div>", "\n")
+    str = globalReplace(str, "<br>", "\n")
     str = globalReplace(str, "&nbsp;", " ")
+
+    /*if(str[0]=="\n"){
+        str = str.substring(1)
+    }*/
 
     return str
 }
@@ -75,13 +73,19 @@ function stringToHTML(str) {
 
 // Agrega estilo a los comandos
 function prettyCommand(str) {
-    newS = ""
+    let newS = ""
 
     while(str.length>0){
-        if(true){
-            newS = newS + str[0]
-            str = str.substring(1)
+        let ReadToken = getNextToken(str)
+
+        NextToken = ReadToken.NextToken
+        str = ReadToken.RestString
+
+        if(NextToken[0]=="\\"){
+            NextToken = "<b style='color:red'>" + NextToken + "</b>"
         }
+
+        newS += NextToken
     }
 
     return newS
@@ -98,12 +102,14 @@ function prettyCommand(str) {
 input.addEventListener("input", EventFunction)
 
 function EventFunction(element) {
-    S = element.srcElement.innerHTML
+    let S = element.srcElement.innerHTML
     
+    console.log([S])
+
     S = cleanInput(S)
 
     console.log([S])
-    console.log(S)
+    //console.log(S)
     
     S = stringToHTML(S)
     output.innerHTML = prettyCommand(S)
