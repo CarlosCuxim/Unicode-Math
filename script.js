@@ -6,7 +6,10 @@ const ControlSequences = {
     "to" : "→",
     "pm" : "±",
     "in" : "∈",
-    "int": "∫"
+    "int": "∫",
+    "otimes" : "⊗",
+    "tensor" : "⊗",
+    "simeq" : "≃"
 }
 
 const SupScript = {
@@ -46,61 +49,40 @@ const SubScript = {
     "x": "ₓ"
 }
 
+const MathIt = {
+        // Letras
+        "a": "𝑎", "b": "𝑏", "c": "𝑐", "d": "𝑑", "e": "𝑒",
+        "f": "𝑓", "g": "𝑔", "h": "ℎ", "i": "𝑖", "j": "𝑗",
+        "k": "𝑘", "l": "𝑙", "m": "𝑚", "n": "𝑛", "o": "𝑜",
+        "p": "𝑝", "q": "𝑞", "r": "𝑟", "s": "𝑠", "t": "𝑡",
+        "u": "𝑢", "v": "𝑣", "w": "𝑤", "x": "𝑥", "y": "𝑦",
+        "z": "𝑧", 
+        // Mayúsculas 
+        "A": "𝐴", "B": "𝐵", "C": "𝐶", "D": "𝐷", "E": "𝐸",
+        "F": "𝐹", "G": "𝐺", "H": "𝐻", "I": "𝐼", "J": "𝐽",
+        "K": "𝐾", "L": "𝐿", "M": "𝑀", "N": "𝑁", "O": "𝑂",
+        "P": "𝑃", "Q": "𝑄", "R": "𝑅", "S": "𝑆", "T": "𝑇",
+        "U": "𝑈", "V": "𝑉", "W": "𝑊", "X": "𝑋", "Y": "𝑌",
+        "Z": "𝑍"
+}
+
+
+
 // Cambiar usando un diccionario
 function ReplaceByDict(str, dict){
     const n = str.length
     let NewStr = ""
 
     for(let i=0; i<n; i++){
-        NewStr += dict[str[i]]
+        if(str[i] in dict){
+            NewStr += dict[str[i]]
+        } else {
+            NewStr += str[i]
+        }
+        
     }
     return NewStr
 }
-
-// Determina si el carácter es letra
-function isLetter(C) {
-    const LetterRegex = /[a-z,A-Z]/
-    
-    return LetterRegex.test(C)
-}
-
-
-// Obtiene el siguiente token de una cadena y el resto de la cadena
-function getNextToken(str) {
-    const n = str.length
-
-    if(n==0){
-        return {Token: str, TypeToken: undefined, RestString: str}
-    }
-
-    const l = str[0] 
-
-    if(isLetter(l)){
-        return {Token: l, TypeToken: "Letter", RestString: str.substring(1)}
-    }
-
-    switch(l){
-        case "\\":
-            const CsRegex = /\\[a-z,A-Z]+|\\./
-            const CS = str.match(CsRegex)[0]
-
-            return {Token: CS, TokenName: CS.substring(1), TypeToken: "ControlSequence", RestString: str.substring(CS.length)}
-        
-        case "$":
-            return {Token: l, TypeToken: "MathDelimiter", RestString: str.substring(1)}
-
-        case "{":
-            return {Token: l, TypeToken: "OpenDelimiter", RestString: str.substring(1)}
-    
-        case "}":
-            return {Token: l, TypeToken: "CloseDelimiter", RestString: str.substring(1)}
-
-        default:
-            return {Token: l, TypeToken: "Other", RestString: str.substring(1)}
-    }
-}
-
-
 
 
 /* FUNCIONES ESTILIZADO */
@@ -114,6 +96,7 @@ function cleanInput(str) {
     return str
 }
 
+
 // Convierte un texto a html
 function stringToHTML(str) {
     str = str.replaceAll("\n", "<br>")
@@ -124,24 +107,28 @@ function stringToHTML(str) {
 
 // Cambia los comandos
 function ReplaceControlSequences(str) {
-    let newS = ""
+    let NewStr = str
 
-    while(str.length>0){
-        let Token = getNextToken(str)
-        let Replace = Token.Token
+    const CsRegex = /\\[a-z,A-Z]+|\\./g
 
-        if((Token.TypeToken=="ControlSequence") && (Token.TokenName in ControlSequences)){
-            Replace = ControlSequences[Token.TokenName]
+    let M = str.match(CsRegex)
+
+    if(M){
+        M = M.reverse()
+        for(let substr of M){
+            let csname = substr.substring(1)
+            if(csname in ControlSequences){
+                NewStr = NewStr.replaceAll(substr, ControlSequences[csname])
+            }
         }
-
-        newS += Replace
-        str = Token.RestString
     }
 
-    return newS
+
+    return NewStr
 }
 
 
+// Cambia los superindices
 function ReplaceSupScript(str){
     let NewStr = str
 
@@ -172,6 +159,8 @@ function ReplaceSupScript(str){
     return NewStr
 }
 
+
+// Cambia los subindices
 function ReplaceSubScript(str){
     let NewStr = str
 
@@ -203,6 +192,25 @@ function ReplaceSubScript(str){
 }
 
 
+// Cambiar texto matemático
+function ReplaceMath(str){
+    let NewStr = str
+
+    const CsRegex = /\$[^\$]+\$/g
+
+    let M = str.match(CsRegex)
+    
+    if(M){
+        for(let substr of M){
+            let replace = substr.substring(1, substr.length-1)
+            replace = ReplaceByDict(replace, MathIt)
+            NewStr = NewStr.replaceAll(substr, replace)
+        }
+    }
+
+    return NewStr
+}
+
 
 /* PROGRAMACIÓN */
 
@@ -212,18 +220,13 @@ input.addEventListener("input", EventFunction)
 
 function EventFunction(element) {
     let S = element.srcElement.innerHTML
-    
-    console.log([S])
 
     S = cleanInput(S)
-
-    console.log([S])
-    //console.log(S)
-    
     S = stringToHTML(S)
     S = ReplaceControlSequences(S)
     S = ReplaceSupScript(S)
     S = ReplaceSubScript(S)
+    S = ReplaceMath(S)
 
     output.innerHTML = S
 }
