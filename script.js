@@ -9,7 +9,32 @@ const ControlSequences = {
     "int": "∫",
     "otimes" : "⊗",
     "tensor" : "⊗",
-    "simeq" : "≃"
+    "simeq" : "≃",
+    "circ": "○",
+    "iff": "⇔",
+    "implies": "⇒",
+    "geq": "≥",
+    "leq": "≤",
+    "subseteq": "⊆",
+    "supseteq": "⊇",
+    "mapsto": "↦",
+    "cdot": "·",
+    "times": "×",
+    "coprod": "∐",
+    // Script text
+    "scrA": "𝓐",
+    "scrB": "𝓑",
+    "scrC": "𝓒",
+    "scrI": "𝓘",
+    // mathbb
+    "Z": "ℤ",
+    "R": "ℝ",
+    // Letras griegas
+    "alpha": "α",
+    "beta": "β",
+    "pi": "π",
+    "tau": "τ",
+    "Pi": "Π",
 }
 
 const SupScript = {
@@ -109,7 +134,7 @@ function stringToHTML(str) {
 function ReplaceControlSequences(str) {
     let NewStr = str
 
-    const CsRegex = /\\[a-z,A-Z]+|\\./g
+    const CsRegex = /\\[a-zA-Z]+|\\./g
 
     let M = str.match(CsRegex)
 
@@ -133,7 +158,7 @@ function ReplaceSupScript(str){
     let NewStr = str
 
     // Quitar los superindices solo numéricos o de una letra
-    let SupRegex  = /\^[0-9]+|\^[a-z,A-Z,+,\-,=,(,),/]/g
+    let SupRegex  = /\^[0-9]+|\^[a-zA-Z+\-=()/]/g
     let M = str.match(SupRegex)
 
     if(M){
@@ -145,7 +170,7 @@ function ReplaceSupScript(str){
     }
 
     // Quitar los superíndices con llaves
-    SupRegex  = /\^{[0-9,a-z,A-Z,+,\-,=,(,),/]+}/g
+    SupRegex  = /\^{[0-9a-zA-Z+\-=()/]+}/g
     M = str.match(SupRegex)
     
     if(M){
@@ -165,7 +190,7 @@ function ReplaceSubScript(str){
     let NewStr = str
 
     // Quitar los superindices solo numéricos o de una letra
-    let SupRegex  = /\_[0-9]+|\_[a,e,h-p,r-v,x,+,\-,=,(,)]/g
+    let SupRegex  = /\_[0-9]+|\_[aeh-pr-vx+\-=()]/g
     let M = str.match(SupRegex)
 
     if(M){
@@ -177,7 +202,7 @@ function ReplaceSubScript(str){
     }
 
     // Quitar los superíndices con llaves
-    SupRegex  = /\_{[0-9,a,e,h-p,r-v,x,+,\-,=,(,)]+}/g
+    SupRegex  = /\_{[0-9aeh-pr-vx+\-=()]+}/g
     M = str.match(SupRegex)
     
     if(M){
